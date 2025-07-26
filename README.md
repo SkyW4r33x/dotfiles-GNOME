@@ -25,8 +25,8 @@ Este script automatiza la instalación y configuración de **SkyW4r33x**, un ent
 2.  **Clona o descarga este repositorio**:
     
     ```bash
-    git clone https://github.com/SkyW4r33x/dotfiles.git
-    cd dotfiles
+    git clone https://github.com/SkyW4r33x/dotfiles-GNOME
+    cd dotfiles-GNOME
     
     ```
     
