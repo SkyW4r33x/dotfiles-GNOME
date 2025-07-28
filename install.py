@@ -939,7 +939,7 @@ class CombinedInstaller:
             print(f"   {KaliStyle.YELLOW}▸{KaliStyle.RESET} {KaliStyle.WHITE}{name:<17}{KaliStyle.RESET} {KaliStyle.GREY}→{KaliStyle.RESET} {desc}")
         
         print(f"\n{KaliStyle.TURQUOISE}{'═' * 50}{KaliStyle.RESET}")
-        print(f"\n{KaliStyle.WARNING}{KaliStyle.BOLD}Important:{KaliStyle.RESET} Restart GNOME Shell {KaliStyle.GREY}(Alt+F2, type 'r'){KaliStyle.RESET} or reboot to apply all changes")
+        print(f"\n{KaliStyle.WARNING}{KaliStyle.BOLD} Important:{KaliStyle.RESET} Restart GNOME Shell {KaliStyle.GREY}(Alt + F2, 'r'){KaliStyle.RESET} or reboot to apply all changes")
 
     def cleanup(self):
         print(f"\n{KaliStyle.INFO} Cleaning temporary files...")
