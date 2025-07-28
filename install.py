@@ -248,7 +248,7 @@ class CombinedInstaller:
     def install_additional_packages(self):
         print(f"\n{KaliStyle.INFO} Installing tools")
         self.packages = [
-            'xclip', 'zsh', 'neovim', 'lsd', 'bat', 'terminator', 'kitty',
+            'xclip', 'zsh', 'lsd', 'bat', 'terminator', 'kitty',
             'keepassxc', 'gnome-shell-extensions', 'flameshot'
         ]
         self.max_length = max(len(pkg) for pkg in self.packages)
@@ -875,8 +875,10 @@ class CombinedInstaller:
             subprocess.run(['gsettings', 'set', base_path, 'binding', shortcut['shortcut']], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             print(f"{KaliStyle.SUCCESS} Shortcut configured: {shortcut['name']}")
         return True
+    
 # ------------------------------------- MESSSAGES FINISHING INSTALLATION ------------------------------------- #
     def show_final_message(self):
+        time.sleep(2)
         os.system('clear')
         print(f"\n\t\t[{KaliStyle.BLUE}{KaliStyle.BOLD}+{KaliStyle.RESET}] Installation Summary [{KaliStyle.BLUE}{KaliStyle.BOLD}+{KaliStyle.RESET}]\n\n")
 
