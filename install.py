@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 #
 # Author: Jordan aka SkyW4r33x
@@ -610,7 +610,7 @@ class CombinedInstaller:
                 rm -f "$target_file"
                 echo -e "\\n${{CYAN}}[${{BOLD}}+${{NC}}${{CYAN}}]${{NC}} Target cleared successfully\\n"
             else
-                echo -e "\\n${{YELLOW}}[${{BOLD}}!${{NC}}${{YELLOW}}]${{NC}} No target to clear\\n"
+                echo -e "\\n${{YELLOW}}[${{BOLD}}!${{YELLOW}}]${{NC}} No target to clear\\n"
             fi
             return 0
         fi
@@ -877,11 +877,10 @@ class CombinedInstaller:
         return True
 # ------------------------------------- MESSSAGES FINISHING INSTALLATION ------------------------------------- #
     def show_final_message(self):
-        print(f"\n{KaliStyle.GREEN}{KaliStyle.BOLD}Installation Completed Successfully{KaliStyle.RESET}")
-        print(f"{KaliStyle.TURQUOISE}{'═' * 50}{KaliStyle.RESET}\n")
-        
+        os.system('clear')
+        print(f"\n\t\t[{KaliStyle.BLUE}{KaliStyle.BOLD}+{KaliStyle.RESET}] Installation Summary [{KaliStyle.BLUE}{KaliStyle.BOLD}+{KaliStyle.RESET}]\n\n")
 
-        print(f"{KaliStyle.BLUE}{KaliStyle.BOLD}Keyboard Shortcuts{KaliStyle.RESET}")
+        print(f"[{KaliStyle.BLUE}{KaliStyle.BOLD}+{KaliStyle.RESET}] Keyboard Shortcuts")
         shortcuts = [
             ("Terminator", "Super + Enter"),
             ("Flameshot", "Print"),
@@ -896,7 +895,7 @@ class CombinedInstaller:
         
         print()
         
-        print(f"{KaliStyle.BLUE}{KaliStyle.BOLD}Development Tools{KaliStyle.RESET}")
+        print(f"[{KaliStyle.BLUE}{KaliStyle.BOLD}+{KaliStyle.RESET}] Development Tools")
         tools = [
             ("Neovim", "Advanced text editor with NvChad"),
             ("ZSH", "Enhanced shell with custom configuration"),
@@ -910,8 +909,8 @@ class CombinedInstaller:
             print(f"   {KaliStyle.YELLOW}▸{KaliStyle.RESET} {KaliStyle.WHITE}{name:<12}{KaliStyle.RESET} {KaliStyle.GREY}→{KaliStyle.RESET} {desc}")
         
         print()
-        
-        print(f"{KaliStyle.BLUE}{KaliStyle.BOLD}GNOME Extensions{KaliStyle.RESET}")
+
+        print(f"[{KaliStyle.BLUE}{KaliStyle.BOLD}+{KaliStyle.RESET}] GNOME Extensions")
         extensions = [
             ("Dash to Panel", "Customizable taskbar and panel"),
             ("Top Panel Ethernet", "Network interface monitoring"),
@@ -924,10 +923,10 @@ class CombinedInstaller:
             print(f"   {KaliStyle.YELLOW}▸{KaliStyle.RESET} {KaliStyle.WHITE}{name:<18}{KaliStyle.RESET} {KaliStyle.GREY}→{KaliStyle.RESET} {desc}")
         
         print()
-        
-        print(f"{KaliStyle.BLUE}{KaliStyle.BOLD}Additional Features{KaliStyle.RESET}")
+
+        print(f"[{KaliStyle.BLUE}{KaliStyle.BOLD}+{KaliStyle.RESET}] Additional Features")
         features = [
-            ("Custom Wallpapers", "Desktop and GDM login backgrounds"),
+            ("Custom Wallpapers", "Desktop and GDM login backgrounds - by SkyW4r33x"),
             ("CTF Directories", "Organized folders for pentesting"),
             ("ExtractPorts Tool", "Network scanning utility"),
             ("Custom Aliases", "Enhanced command shortcuts"),
