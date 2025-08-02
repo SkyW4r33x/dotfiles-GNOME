@@ -452,7 +452,7 @@ class CombinedInstaller:
                 with open(top_bar_config_source, 'rb') as f:
                     subprocess.run(['dconf', 'load', '/org/gnome/shell/extensions/top-bar-organizer/'], 
                                    input=f.read(), check=True)
-                print(f"{KaliStyle.SUCCESS} Top Bar Organizer configuration applied (using {top_bar_config_filename})")
+                print(f"{KaliStyle.SUCCESS} Top Bar Organizer configuration applied")
             except Exception as e:
                 print(f"{KaliStyle.ERROR} Error applying Top Bar Organizer configuration: {str(e)}")
                 logging.error(f"Error applying Top Bar Organizer configuration: {str(e)}")
@@ -487,7 +487,7 @@ class CombinedInstaller:
                 print(f"{KaliStyle.ERROR} {ext} not found")
         
         if installed_count > 0:
-            print(f"\n{KaliStyle.WARNING} Restart GNOME Shell (Alt + F2, 'r')")
+            print(f"\n{KaliStyle.WARNING} Restart GNOME Shell {KaliStyle.GREY}(Alt + F2, 'r'){KaliStyle.RESET}")
             input(f"\n{KaliStyle.SUDO_COLOR}[*]{KaliStyle.RESET} Press Enter after restarting GNOME Shell...")
             self.enable_extensions()
             return True
@@ -975,7 +975,8 @@ class CombinedInstaller:
         
         for name, desc in features:
             print(f"   {KaliStyle.YELLOW}▸{KaliStyle.RESET} {KaliStyle.WHITE}{name:<17}{KaliStyle.RESET} {KaliStyle.GREY}→{KaliStyle.RESET} {desc}")
-        
+        print(f"\n[{KaliStyle.BLUE}{KaliStyle.BOLD}+{KaliStyle.RESET}]{KaliStyle.BOLD} Recommended installations:{KaliStyle.RESET}{KaliStyle.BLUE} https://github.com/SkyW4r33x/searchCommand{KaliStyle.RESET}")
+        print(f"[{KaliStyle.GREEN}{KaliStyle.BOLD}*{KaliStyle.RESET}]{KaliStyle.BOLD} searchCommand{KaliStyle.RESET} is a tool search tool that also includes local binary search using {KaliStyle.BOLD}GTFObins{KaliStyle.RESET} data, {KaliStyle.BOLD}GTFSearch {KaliStyle.RESET}")
         print(f"\n{KaliStyle.TURQUOISE}{'═' * 50}{KaliStyle.RESET}")
         print(f"\n{KaliStyle.WARNING}{KaliStyle.BOLD} Important:{KaliStyle.RESET} Restart GNOME Shell {KaliStyle.GREY}(Alt + F2, 'r'){KaliStyle.RESET} or reboot to apply all changes")
 
