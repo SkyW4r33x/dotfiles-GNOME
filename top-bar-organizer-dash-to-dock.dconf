@@ -1,0 +1,4 @@
+[/]
+center-box-order=['dateMenu']
+left-box-order=['activities', 'places-menu']
+right-box-order=['top-panel-target-indicator', 'vpn-ip-address-indicator', 'top-panel-localip-indicator', 'tiling-assistant@leleat-on-github', 'drive-menu', 'screenRecording', 'screenSharing', 'dwellClick', 'a11y', 'keyboard', 'quickSettings', 'top-panel-target@kali.org', 'top-panel-vpnip@kali.org', 'top-panel-ethernet@kali.org']

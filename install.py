@@ -59,6 +59,7 @@ class CombinedInstaller:
         self.pictures_dir = os.path.join(self.home_dir, 'Pictures')
         self.actions_taken = []  
         self.needs_gdm_restart = False
+        self.dash_to_panel_installed = False
         
         log_path = os.path.join(self.script_dir, 'install.log')
         if os.path.exists(log_path) and not os.access(log_path, os.W_OK):
@@ -142,6 +143,7 @@ class CombinedInstaller:
         required_files = [
             "dash-to-panel-settings.dconf", 
             "top-bar-organizer.dconf",
+            "top-bar-organizer-dash-to-dock.dconf",
             "JetBrainsMono.zip",
             "extractPorts.py", 
             ".zshrc", 
@@ -310,6 +312,30 @@ class CombinedInstaller:
             logging.error(f"General error in install_additional_packages: {str(e)}")
             return False
 
+    def ask_dash_to_panel_installation(self):
+        """Pregunta al usuario si desea instalar Dash to Panel"""
+        print(f"\n{KaliStyle.INFO} Configuration Options")
+        print(f"{KaliStyle.GREY}{'─' * 40}{KaliStyle.RESET}")
+        print(f"{KaliStyle.YELLOW}[?]{KaliStyle.RESET} Do you want to install {KaliStyle.BOLD}Dash to Panel{KaliStyle.RESET}?")
+        print(f" {KaliStyle.TURQUOISE}→{KaliStyle.RESET} {KaliStyle.WHITE}Yes{KaliStyle.RESET}: Install Dash to Panel (replaces default Dash to Dock) - {KaliStyle.BLUE}https://i.imgur.com/uO0oKGG.png{KaliStyle.RESET}")
+        print(f" {KaliStyle.TURQUOISE}→{KaliStyle.RESET} {KaliStyle.WHITE}No{KaliStyle.RESET}: Keep default Dash to Dock - {KaliStyle.BLUE}https://i.imgur.com/Ro4z815.png{KaliStyle.RESET}")
+        while True:
+            try:
+                response = input(f"\n{KaliStyle.SUDO_COLOR}[*]{KaliStyle.RESET} Install Dash to Panel? (Y/n): ").lower().strip()
+                if response == '' or response == 'y' or response == 'yes':
+                    self.dash_to_panel_installed = True
+                    print(f"{KaliStyle.SUCCESS} Dash to Panel will be installed")
+                    return True
+                elif response == 'n' or response == 'no':
+                    self.dash_to_panel_installed = False
+                    print(f"{KaliStyle.SUCCESS} Default Dash to Dock will be preserved")
+                    return True
+                else:
+                    print(f"{KaliStyle.WARNING} Please enter 'y' for yes or 'n' for no")
+            except KeyboardInterrupt:
+                print(f"\n{KaliStyle.WARNING} Installation cancelled")
+                return False
+
     def install_gnome_extensions(self):
         print(f"\n{KaliStyle.INFO} Installing GNOME extensions...")
         if os.path.exists(self.temp_dir):
@@ -317,10 +343,17 @@ class CombinedInstaller:
         os.makedirs(self.temp_dir)
         os.chdir(self.temp_dir)
 
-        if not self.install_dash_to_panel():
+        if not self.ask_dash_to_panel_installation():
             return False
+
+        if self.dash_to_panel_installed:
+            if not self.install_dash_to_panel():
+                return False
+        else:
+            print(f"{KaliStyle.INFO} Skipping Dash to Panel installation. Keeping Dash to Dock active.")
+
         self.manage_extensions(quiet=True)
-        return True
+        return True 
 
     def install_dash_to_panel(self):
         print(f"\n{KaliStyle.INFO} Installing Dash to Panel (latest release)...")
@@ -360,11 +393,12 @@ class CombinedInstaller:
             print(f"\n{KaliStyle.INFO} Checking and disabling existing extensions")
         try:
             extensions_to_disable = [
-                'dash-to-dock@micxgx.gmail.com', 
                 'system-monitor@gnome-shell-extensions.gcampax.github.com',
                 'apps-menu@gnome-shell-extensions.gcampax.github.com',
                 'top-panel-vpnip@kali.org'
             ]
+            if self.dash_to_panel_installed:
+                extensions_to_disable.append('dash-to-dock@micxgx.gmail.com')
             for ext in extensions_to_disable:
                 subprocess.run(['gnome-extensions', 'disable', ext], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
                 if not quiet:
@@ -378,12 +412,13 @@ class CombinedInstaller:
         print(f"\n{KaliStyle.INFO} Enabling extensions...")
         
         extensions = [
-            "dash-to-panel@jderose9.github.com",
             "top-panel-ethernet@kali.org",
             "top-panel-target@kali.org", 
             "top-panel-vpnip@kali.org",
             "top-bar-organizer@julian.gse.jsts.xyz"
         ]
+        if self.dash_to_panel_installed:
+            extensions.insert(0, "dash-to-panel@jderose9.github.com")
         
         enabled_count = 0
         for ext in extensions:
@@ -398,24 +433,26 @@ class CombinedInstaller:
                 print(f"{KaliStyle.ERROR} Unexpected error enabling {ext}: {str(e)}")
                 logging.error(f"Error in enable_extensions: {str(e)}")
 
-        dash_config_source = os.path.join(self.script_dir, "dash-to-panel-settings.dconf")
-        if os.path.exists(dash_config_source) and os.path.getsize(dash_config_source) > 0:
-            try:
-                with open(dash_config_source, 'rb') as f:
-                    subprocess.run(['dconf', 'load', '/org/gnome/shell/extensions/dash-to-panel/'], 
-                                   input=f.read(), check=True)
-                print(f"{KaliStyle.SUCCESS} Dash to Panel configuration applied")
-            except Exception as e:
-                print(f"{KaliStyle.ERROR} Error applying Dash to Panel configuration: {str(e)}")
-                logging.error(f"Error applying Dash to Panel configuration: {str(e)}")
+        if self.dash_to_panel_installed:
+            dash_config_source = os.path.join(self.script_dir, "dash-to-panel-settings.dconf")
+            if os.path.exists(dash_config_source) and os.path.getsize(dash_config_source) > 0:
+                try:
+                    with open(dash_config_source, 'rb') as f:
+                        subprocess.run(['dconf', 'load', '/org/gnome/shell/extensions/dash-to-panel/'], 
+                                       input=f.read(), check=True)
+                    print(f"{KaliStyle.SUCCESS} Dash to Panel configuration applied")
+                except Exception as e:
+                    print(f"{KaliStyle.ERROR} Error applying Dash to Panel configuration: {str(e)}")
+                    logging.error(f"Error applying Dash to Panel configuration: {str(e)}")
 
-        top_bar_config_source = os.path.join(self.script_dir, "top-bar-organizer.dconf")
+        top_bar_config_filename = "top-bar-organizer.dconf" if self.dash_to_panel_installed else "top-bar-organizer-dash-to-dock.dconf"
+        top_bar_config_source = os.path.join(self.script_dir, top_bar_config_filename)
         if os.path.exists(top_bar_config_source) and os.path.getsize(top_bar_config_source) > 0:
             try:
                 with open(top_bar_config_source, 'rb') as f:
                     subprocess.run(['dconf', 'load', '/org/gnome/shell/extensions/top-bar-organizer/'], 
                                    input=f.read(), check=True)
-                print(f"{KaliStyle.SUCCESS} Top Bar Organizer configuration applied")
+                print(f"{KaliStyle.SUCCESS} Top Bar Organizer configuration applied (using {top_bar_config_filename})")
             except Exception as e:
                 print(f"{KaliStyle.ERROR} Error applying Top Bar Organizer configuration: {str(e)}")
                 logging.error(f"Error applying Top Bar Organizer configuration: {str(e)}")
@@ -431,12 +468,13 @@ class CombinedInstaller:
         print(f"\n{KaliStyle.INFO} Verifying installation...")
         
         extensions_to_check = [
-            "dash-to-panel@jderose9.github.com",
             "top-panel-ethernet@kali.org",
             "top-panel-target@kali.org", 
             "top-panel-vpnip@kali.org",
             "top-bar-organizer@julian.gse.jsts.xyz"
         ]
+        if self.dash_to_panel_installed:
+            extensions_to_check.insert(0, "dash-to-panel@jderose9.github.com")
         
         installed_count = 0
         for ext in extensions_to_check:
