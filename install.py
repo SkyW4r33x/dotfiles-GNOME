@@ -152,6 +152,8 @@ class CombinedInstaller:
             "sudo-plugin",
             "wallpaper/kali-simple-3840x2160.png", 
             "wallpaper/browser-home-page-banner.jpg",
+            "wallpaper/grub-16x9.png",
+            "wallpaper/grub-4x3.png",
             "gnome-extensions"
         ]
         missing = [f for f in required_files if not os.path.exists(os.path.join(self.script_dir, f))]
@@ -862,6 +864,57 @@ class CombinedInstaller:
             logging.error(f"Error in setup_browser_wallpaper: {str(e)}")
             return False
 
+    def setup_grub_images(self):
+        print(f"\n{KaliStyle.INFO} Setting up GRUB boot images...")
+        wallpaper_source_dir = os.path.join(self.script_dir, "wallpaper")
+        dest_dirs = [
+            "/boot/grub/themes/kali",
+            "/usr/share/grub/themes/kali",
+            "/usr/share/desktop-base/kali-theme/grub"
+        ]
+        image_names = ["grub-16x9.png", "grub-4x3.png"]
+
+        try:
+            for dest_dir in dest_dirs:
+                if not os.path.exists(dest_dir):
+                    continue
+                print(f"{KaliStyle.INFO} Updating in {dest_dir}...")
+                for image_name in image_names:
+                    source = os.path.join(wallpaper_source_dir, image_name)
+                    if not os.path.exists(source):
+                        print(f"{KaliStyle.ERROR} Image not found: {source}")
+                        continue
+
+                    dest = os.path.join(dest_dir, image_name)
+                    backup = f"{dest}.bak.{time.strftime('%Y%m%d_%H%M%S')}"
+
+                    if os.path.exists(dest):
+                        if not self.run_command(['cp', dest, backup], sudo=True, quiet=True):
+                            print(f"{KaliStyle.ERROR} Failed to backup {dest}")
+                            continue
+                        self.actions_taken.append({'type': 'backup', 'backup': backup, 'original': dest})
+                        print(f"{KaliStyle.SUCCESS} Backup created: {backup}")
+
+                    if not self.run_command(['cp', source, dest], sudo=True, quiet=True):
+                        print(f"{KaliStyle.ERROR} Failed to copy {source} to {dest}")
+                        continue
+                    self.actions_taken.append({'type': 'file_copy', 'dest': dest})
+
+                    self.run_command(['chmod', '644', dest], sudo=True, quiet=True)
+                    print(f"{KaliStyle.SUCCESS} Installed {image_name} in {dest_dir}")
+
+            print(f"{KaliStyle.INFO} Updating GRUB configuration...")
+            if not self.run_command(['update-grub'], sudo=True, quiet=True):
+                print(f"{KaliStyle.ERROR} Failed to update GRUB")
+                return False
+
+            print(f"{KaliStyle.SUCCESS} GRUB images updated")
+            return True
+        except Exception as e:
+            print(f"{KaliStyle.ERROR} Error updating GRUB images: {str(e)}")
+            logging.error(f"Error in setup_grub_images: {str(e)}")
+            return False
+
     def setup_ctf_folders(self):
         print(f"\n{KaliStyle.INFO} Setting up CTF folders...")
         ctf_folders = [
@@ -967,6 +1020,7 @@ class CombinedInstaller:
         print(f"[{KaliStyle.BLUE}{KaliStyle.BOLD}+{KaliStyle.RESET}] Additional Features")
         features = [
             ("Custom Wallpapers", "Desktop and GDM login backgrounds - by SkyW4r33x"),
+            ("GRUB Boot Images", "Custom boot screen images - by SkyW4r33x"),
             ("CTF Directories", "Organized folders for pentesting"),
             ("ExtractPorts Tool", "Network scanning utility"),
             ("Custom Aliases", "Enhanced command shortcuts"),
@@ -1000,6 +1054,9 @@ class CombinedInstaller:
             elif action['type'] == 'dir_copy' and os.path.exists(action['dest']):
                 self.run_command(['rm', '-rf', action['dest']], sudo=True, quiet=True)
                 print(f"{KaliStyle.SUCCESS} Deleted {action['dest']}")
+            elif action['type'] == 'backup' and os.path.exists(action['backup']):
+                self.run_command(['mv', action['backup'], action['original']], sudo=True, quiet=True)
+                print(f"{KaliStyle.SUCCESS} Restored {action['original']} from backup")
             elif action['type'] == 'package':
                 print(f"{KaliStyle.WARNING} Rolling back package {action['pkg']}...")
                 self.run_command(['apt', 'remove', '-y', action['pkg']], sudo=True, quiet=True)
@@ -1030,7 +1087,8 @@ class CombinedInstaller:
             (self.setup_wallpaper, "Wallpaper setup"),
             (self.setup_browser_wallpaper, "Browser wallpaper setup"),
             (self.setup_ctf_folders, "CTF folders setup"),
-            (self.setup_gdm_wallpaper, "GDM wallpaper setup")
+            (self.setup_gdm_wallpaper, "GDM wallpaper setup"),
+            (self.setup_grub_images, "GRUB images setup")
         ]
 
         total_tasks = len(tasks)
