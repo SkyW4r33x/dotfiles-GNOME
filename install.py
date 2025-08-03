@@ -975,7 +975,7 @@ class CombinedInstaller:
         
         for name, desc in features:
             print(f"   {KaliStyle.YELLOW}▸{KaliStyle.RESET} {KaliStyle.WHITE}{name:<17}{KaliStyle.RESET} {KaliStyle.GREY}→{KaliStyle.RESET} {desc}")
-        print(f"\n[{KaliStyle.GREEN}{KaliStyle.BOLD}*{KaliStyle.RESET}] {KaliStyle.BOLD}UPDATE:{KaliStyle.RESET} UPDATE - 28/03/2025: New background for the Kali Linux boot manager")
+        print(f"\n[{KaliStyle.GREEN}{KaliStyle.BOLD}*{KaliStyle.RESET}] {KaliStyle.BOLD}UPDATE 28/03/2025:{KaliStyle.RESET} New background for the Kali Linux boot manager")
         print(f"[{KaliStyle.BLUE}{KaliStyle.BOLD}i{KaliStyle.RESET}] {KaliStyle.BLUE}https://i.imgur.com/b6zaCgi.png{KaliStyle.RESET}")
         print(f"\n{KaliStyle.TURQUOISE}{'═' * 50}{KaliStyle.RESET}")
         print(f"\n[{KaliStyle.BLUE}{KaliStyle.BOLD}+{KaliStyle.RESET}]{KaliStyle.BOLD} Recommended installations:{KaliStyle.RESET}{KaliStyle.BLUE} https://github.com/SkyW4r33x/searchCommand{KaliStyle.RESET}")
